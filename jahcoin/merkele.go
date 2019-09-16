@@ -1,6 +1,9 @@
 package jahcoin
 
-import "errors"
+import (
+	"errors"
+	"math"
+)
 
 var (
 	ErrNotSufficentTransactions = errors.New("merkele: There are not enough transactions to create a merkele tree")
@@ -8,26 +11,25 @@ var (
 )
 
 // Node is an element of a Merkele tree
-type Node struct {
+type node struct {
 	Index int
 	Hash  string
-	Left  *Node
-	Right *Node
+	Left  *node
+	Right *node
 }
 
 // Merkele tree contains all the transactions in a block
 // and their combined hashes
-type Merkele struct {
-	Root         *Node
+type merkele struct {
+	Root         *node
 	transactions []Transaction
 }
 
 // NewMerkele returns a pointer to a Merkele tree and any errors
-// The length of the transactions must match the `MaxTransactionsPerBlock` constant
-func NewMerkele(transactions []Transaction) (*Merkele, error) {
+func newMerkele(transactions []Transaction, transactionsPerBlock int) (*merkele, error) {
 	tAmount := len(transactions)
 
-	if tAmount >= MaxTransactionsPerBlock {
+	if tAmount >= transactionsPerBlock {
 		return nil, ErrNotSufficentTransactions
 	}
 
@@ -35,11 +37,13 @@ func NewMerkele(transactions []Transaction) (*Merkele, error) {
 		return nil, ErrTooManyTransactions
 	}
 
-	m := &Merkele{
+	m := &merkele{
 		transactions: transactions,
 	}
 
-	m.Root = &Node{}
+	levels := math.Log2(float64(transactionsPerBlock))
+
+	m.Root = &node{}
 
 	return m, nil
 }

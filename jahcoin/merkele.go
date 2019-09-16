@@ -12,16 +12,16 @@ var (
 
 // Node is an element of a Merkele tree
 type node struct {
-	Index int
-	Hash  string
-	Left  *node
-	Right *node
+	index int
+	hash  string
+	left  *node
+	right *node
 }
 
 // Merkele tree contains all the transactions in a block
 // and their combined hashes
 type merkele struct {
-	Root         *node
+	root         *node
 	transactions []Transaction
 }
 
@@ -30,11 +30,11 @@ func newMerkele(transactions []Transaction, transactionsPerBlock int) (*merkele,
 	tAmount := len(transactions)
 
 	if tAmount >= transactionsPerBlock {
-		return nil, ErrNotSufficentTransactions
+		return nil, ErrTooManyTransactions
 	}
 
 	if tAmount < 1 {
-		return nil, ErrTooManyTransactions
+		return nil, ErrNotSufficentTransactions
 	}
 
 	m := &merkele{
@@ -44,6 +44,9 @@ func newMerkele(transactions []Transaction, transactionsPerBlock int) (*merkele,
 	levels := math.Log2(float64(transactionsPerBlock))
 
 	m.Root = &node{}
+
+		m.root.left=
+
 
 	return m, nil
 }

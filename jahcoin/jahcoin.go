@@ -5,7 +5,7 @@ import (
 )
 
 type Blockchain struct {
-	GenesisBlock *Block
+	GekyumeBlock *Block
 }
 
 // NewBlockchain returns a pointer to a blockchain and any errors
@@ -13,7 +13,7 @@ func NewBlockchain(transactionsPerBlock int) (*Blockchain, error) {
 	// TODO: check for valid transactionsPerBlock
 
 	b := &Blockchain{
-		GenesisBlock: &Block{},
+		GekyumeBlock: &Block{},
 	}
 
 	return b, nil
@@ -24,7 +24,8 @@ type Block struct {
 	PrevHash     string
 	Hash         string
 	Timestamp    time.Time
-	transactions merkele
+	Transactions []Transaction
+	JahRoot      []byte
 }
 
 // Transaction is a transaction between 2 parties

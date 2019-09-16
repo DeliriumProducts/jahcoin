@@ -2,16 +2,37 @@ package jahcoin
 
 import (
 	"crypto/ed25519"
+	"errors"
+	"math"
 	"time"
 )
+
+var (
+	ErrInvalidTransactionsPerBlock = errors.New("jahcoin: TransactionsPerBlock must be a proper logarithm of base 2")
+	ErrInvalidDifficulty           = errors.New("jahcoin: Difficulty must be a number higher than 0")
+)
+
+type Config struct {
+	TransactionsPerBlock int
+	Difficulty           int
+}
 
 type Blockchain struct {
 	GekyumeBlock *Block
 }
 
 // NewBlockchain returns a pointer to a blockchain and any errors
-func NewBlockchain(transactionsPerBlock int) (*Blockchain, error) {
-	// TODO: check for valid transactionsPerBlock
+func NewBlockchain(c *Config) (*Blockchain, error) {
+
+	temp := math.Log2(float64(c.TransactionsPerBlock))
+
+	if temp != float64(int64(temp)) {
+		return nil, ErrInvalidTransactionsPerBlock
+	}
+
+	if c.Difficulty < 1 {
+		return nil, ErrInvalidDifficulty
+	}
 
 	b := &Blockchain{
 		GekyumeBlock: &Block{},

@@ -11,10 +11,15 @@ type Block struct {
 	Transactions Merkele
 }
 
-// A -> B -> C
 type Merkele struct {
-	Root       *Node
-	dataBlocks []Transaction
+	Root         *Node
+	transactions []Transaction
+}
+
+type Node struct {
+	Index    int
+	Hash     string
+	Children []Node
 }
 
 type Transaction struct {

@@ -12,6 +12,7 @@ var (
 	ErrInvalidDifficulty           = errors.New("jahcoin: Difficulty must be a number higher than 0")
 )
 
+// Config contains configuration options for a blockchain
 type Config struct {
 	TransactionsPerBlock int
 	Difficulty           int
@@ -19,6 +20,22 @@ type Config struct {
 
 type Blockchain struct {
 	GekyumeBlock *Block
+}
+
+// Block is a node of a blockchain
+type Block struct {
+	PrevHash     string
+	Hash         string
+	Timestamp    time.Time
+	Transactions []Transaction
+	JahRoot      []byte
+}
+
+// Transaction is a transaction between 2 parties
+type Transaction struct {
+	Amount    float64
+	Recipient ed25519.PublicKey
+	Sender    ed25519.PublicKey
 }
 
 // NewBlockchain returns a pointer to a blockchain and any errors
@@ -39,20 +56,4 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 	}
 
 	return b, nil
-}
-
-// Block is a node of a blockchain
-type Block struct {
-	PrevHash     string
-	Hash         string
-	Timestamp    time.Time
-	Transactions []Transaction
-	JahRoot      []byte
-}
-
-// Transaction is a transaction between 2 parties
-type Transaction struct {
-	Amount    float64
-	Recipient ed25519.PublicKey
-	Sender    ed25519.PublicKey
 }

@@ -4,6 +4,12 @@ import (
 	"time"
 )
 
+const (
+	// MaxTransactionsPerBlock is the amount of transactions per block
+	MaxTransactionsPerBlock = 16
+)
+
+// Block is a node of a blockchain
 type Block struct {
 	PrevHash     string
 	Hash         string
@@ -11,17 +17,7 @@ type Block struct {
 	Transactions Merkele
 }
 
-type Merkele struct {
-	Root         *Node
-	transactions []Transaction
-}
-
-type Node struct {
-	Index    int
-	Hash     string
-	Children []Node
-}
-
+// Transaction is a transaction between 2 parties
 type Transaction struct {
 	Amount    float64
 	Recipient string

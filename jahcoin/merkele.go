@@ -7,6 +7,7 @@ var (
 	ErrTooManyTransactions      = errors.New("merkele: There are too many transactions to create a merkele tree")
 )
 
+// Node is an element of a Merkele tree
 type Node struct {
 	Index int
 	Hash  string
@@ -14,6 +15,8 @@ type Node struct {
 	Right *Node
 }
 
+// Merkele tree contains all the transactions in a block
+// and their combined hashes
 type Merkele struct {
 	Root         *Node
 	transactions []Transaction

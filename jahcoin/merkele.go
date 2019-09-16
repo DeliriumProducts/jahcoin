@@ -43,10 +43,24 @@ func newMerkele(transactions []Transaction, transactionsPerBlock int) (*merkele,
 
 	levels := math.Log2(float64(transactionsPerBlock))
 
-	m.Root = &node{}
+	m.root = &node{}
 
-		m.root.left=
+	var helper func(n *node, currentLevel int)
 
+	helper = func(n *node, currentLevel int) {
+
+		if currentLevel < 1 {
+			return
+		}
+
+		n.right = &node{}
+		helper(n.right, currentLevel-1)
+
+		n.left = &node{}
+		helper(n.left, currentLevel-1)
+	}
+
+	helper(m.root, int(levels))
 
 	return m, nil
 }

@@ -55,6 +55,7 @@ type Transaction struct {
 
 // Hash returns the hash of the block
 func (b *Block) Hash() [sha256.Size]byte {
+	// this is slow, replace with smth else
 	return sha256.Sum256([]byte(fmt.Sprintf("%v", b)))
 }
 

@@ -18,17 +18,19 @@ type Config struct {
 	Difficulty           int
 }
 
+// Blockchain contains all of the blocks and the configuration options
 type Blockchain struct {
 	GekyumeBlock *Block
 	// TODO: Make it thread safe!!!!??????@@?@?
 	CurrentBlock *Block
-	config       Config
+	Config       Config
 	Blocks       []*Block
 }
 
 // Block is a node of a blockchain
 type Block struct {
 	PrevHash     string
+	Prev         *Block
 	Hash         string
 	Timestamp    time.Time
 	Transactions []Transaction
@@ -45,7 +47,6 @@ type Transaction struct {
 
 // NewBlockchain returns a pointer to a blockchain and any errors
 func NewBlockchain(c *Config) (*Blockchain, error) {
-
 	temp := math.Log2(float64(c.TransactionsPerBlock))
 
 	if temp != float64(int64(temp)) {
@@ -58,28 +59,14 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 
 	b := &Blockchain{
 		GekyumeBlock: &Block{},
-		config:       *c,
+		Config:       *c,
 	}
 
 	b.CurrentBlock = b.GekyumeBlock
-	b.Blocks = []*Block{b.CurrentBlock}
 
 	return b, nil
 }
 
-// func (b *Blockchain) AddBlock(bk *Block) error {
-// 	return nil
-// }
-
 func (b *Blockchain) AddTransaction(t *Transaction) error {
-	if len(b.CurrentBlock.Transactions) < b.config.TransactionsPerBlock {
-		b.CurrentBlock.Transactions = append(b.CurrentBlock.Transactions, *t)
-	}
-
-	if len(b.CurrentBlock.Transactions) == b.config.TransactionsPerBlock {
-		b.Blocks = append(b.Blocks, b.CurrentBlock)
-	}
-
-	return nil
 
 }

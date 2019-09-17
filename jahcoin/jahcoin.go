@@ -29,8 +29,8 @@ type Blockchain struct {
 
 // Block is a node of a blockchain
 type Block struct {
-	PrevHash     string
 	Prev         *Block
+	PrevHash     []byte
 	Hash         []byte
 	Timestamp    time.Time
 	Transactions []Transaction

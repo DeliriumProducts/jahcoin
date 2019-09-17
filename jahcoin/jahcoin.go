@@ -4,6 +4,7 @@ import (
 	"crypto/ed25519"
 	"errors"
 	"math"
+	"sync"
 	"time"
 )
 
@@ -21,7 +22,7 @@ type Config struct {
 // Blockchain contains all of the blocks and the configuration options
 type Blockchain struct {
 	GekyumeBlock *Block
-	// TODO: Make it thread safe!!!!??????@@?@?
+	*sync.Mutex
 	CurrentBlock *Block
 	Config       Config
 }
@@ -58,6 +59,7 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 
 	b := &Blockchain{
 		GekyumeBlock: &Block{},
+		Mutex:        &sync.Mutex{},
 		Config:       *c,
 	}
 
@@ -67,6 +69,9 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 }
 
 func (b *Blockchain) AddTransaction(t *Transaction) error {
+	b.Lock()
+	defer b.Unlock()
+
 	if len(b.CurrentBlock.Transactions) < b.Config.TransactionsPerBlock {
 		b.CurrentBlock.Transactions = append(b.CurrentBlock.Transactions, *t)
 	}

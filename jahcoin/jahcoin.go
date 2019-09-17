@@ -30,7 +30,7 @@ type Blockchain struct {
 type Block struct {
 	PrevHash     string
 	Prev         *Block
-	Hash         string
+	Hash         []byte
 	Timestamp    time.Time
 	Transactions []Transaction
 	Nonce        int

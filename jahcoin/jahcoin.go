@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"hash"
 	"math"
 	"math/rand"
 	"sync"
@@ -25,7 +24,6 @@ type Config struct {
 	// Gekyume is the reciever of the first transaction in the genesis block
 	Gekyume                  ed25519.PublicKey
 	InitialTransactionAmount float64
-	Hasher                   hash.Hash
 }
 
 // Blockchain contains all of the blocks and the configuration options

@@ -22,7 +22,7 @@ type Config struct {
 // Blockchain contains all of the blocks and the configuration options
 type Blockchain struct {
 	GekyumeBlock *Block
-	*sync.Mutex
+	m            *sync.Mutex
 	CurrentBlock *Block
 	Config       Config
 }
@@ -59,7 +59,7 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 
 	b := &Blockchain{
 		GekyumeBlock: &Block{},
-		Mutex:        &sync.Mutex{},
+		mutex:        &sync.Mutex{},
 		Config:       *c,
 	}
 
@@ -69,8 +69,8 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 }
 
 func (b *Blockchain) AddTransaction(t *Transaction) error {
-	b.Lock()
-	defer b.Unlock()
+	b.m.Lock()
+	defer b.m.Unlock()
 
 	if len(b.CurrentBlock.Transactions) < b.Config.TransactionsPerBlock {
 		b.CurrentBlock.Transactions = append(b.CurrentBlock.Transactions, *t)

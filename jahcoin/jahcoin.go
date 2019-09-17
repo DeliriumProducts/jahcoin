@@ -17,6 +17,9 @@ var (
 type Config struct {
 	TransactionsPerBlock int
 	Difficulty           int
+	// Gekyume is the reciever of the first transaction in the genesis block
+	Gekyume                  ed25519.PublicKey
+	InitialTransactionAmount float64
 }
 
 // Blockchain contains all of the blocks and the configuration options

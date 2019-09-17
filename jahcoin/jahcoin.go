@@ -24,7 +24,6 @@ type Blockchain struct {
 	// TODO: Make it thread safe!!!!??????@@?@?
 	CurrentBlock *Block
 	Config       Config
-	Blocks       []*Block
 }
 
 // Block is a node of a blockchain
@@ -68,5 +67,9 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 }
 
 func (b *Blockchain) AddTransaction(t *Transaction) error {
+	if len(b.CurrentBlock.Transactions) < b.Config.TransactionsPerBlock {
+		b.CurrentBlock.Transactions = append(b.CurrentBlock.Transactions, *t)
+	}
 
+	return nil
 }

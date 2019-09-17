@@ -59,7 +59,7 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 
 	b := &Blockchain{
 		GekyumeBlock: &Block{},
-		mutex:        &sync.Mutex{},
+		m:            &sync.Mutex{},
 		Config:       *c,
 	}
 

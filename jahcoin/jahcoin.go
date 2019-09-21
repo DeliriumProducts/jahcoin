@@ -99,6 +99,7 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 	return b, nil
 }
 
+// TODO: make concurrent / workerpool
 func (b *Blockchain) Mine() {
 	for {
 		hash, err := b.CurrentBlock.Hash()

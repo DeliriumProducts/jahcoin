@@ -21,11 +21,12 @@ type Block struct {
 }
 
 // Hash returns the hash of the block
-func (b *Block) Hash() ([sha256.Size]byte, error) {
+func (b *Block) Hash() (*[sha256.Size]byte, error) {
 	bf := &bytes.Buffer{}
 	if err := gob.NewEncoder(bf).Encode(b); err != nil {
-		return [sha256.Size]byte{}, err
+		return &[sha256.Size]byte{}, err
 	}
 
-	return sha256.Sum256(bf.Bytes()), nil
+	h := sha256.Sum256(bf.Bytes())
+	return &h, nil
 }

@@ -201,17 +201,11 @@ func (b *Blockchain) hashTransactions() []byte {
 		// [ABCD]
 
 		newLevels := make([][]byte, lx/2)
-
-		// keep track of the index in newLevels (has to be seperate value, as it's twice as small
-		// maybe there's a  better way to compute the idx without needing another variable?
-		idx := 0
-
 		// start pairing each element with its neighbor
 		// [A, B, C, D] ->
 		// A and B, C and D
 		for i := 0; i < len(levels); i += 2 {
-			newLevels[idx] = hashVariadic(levels[i], levels[i+1])
-			idx++
+			newLevels[i/2] = hashVariadic(levels[i], levels[i+1])
 		}
 
 		return helper(newLevels)

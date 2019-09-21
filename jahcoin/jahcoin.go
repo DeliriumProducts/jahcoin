@@ -1,11 +1,14 @@
 package jahcoin
 
 import (
+	"bytes"
 	"crypto/ed25519"
 	"crypto/sha256"
+	"encoding/gob"
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
 	"sync"
@@ -52,12 +55,13 @@ type Transaction struct {
 }
 
 // Hash returns the hash of the block
-func (b *Block) Hash() [sha256.Size]byte {
-	// this is slow, replace with smth else
-	// TODO: somehow omit the prev pointer,
-	// as they are not reproducible
-	// (say you re-run the program, the pointers would be different)
-	return sha256.Sum256([]byte(fmt.Sprintf("%v", b)))
+func (b *Block) Hash() ([sha256.Size]byte, error) {
+	bf := &bytes.Buffer{}
+	if err := gob.NewEncoder(bf).Encode(b); err != nil {
+		return [sha256.Size]byte{}, err
+	}
+
+	return sha256.Sum256(bf.Bytes()), nil
 }
 
 // NewBlockchain returns a pointer to a blockchain and any errors
@@ -97,7 +101,11 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 
 func (b *Blockchain) Mine() {
 	for {
-		hash := b.CurrentBlock.Hash()
+		hash, err := b.CurrentBlock.Hash()
+		if err != nil {
+			log.Println(err)
+		}
+
 		fmt.Println(hex.EncodeToString(hash[:]))
 		b.CurrentBlock.Nonce = rand.Int()
 		fmt.Println(b.CurrentBlock.Nonce)

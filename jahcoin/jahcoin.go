@@ -7,7 +7,6 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"log"
 	"math"
 	"math/rand"
@@ -23,7 +22,8 @@ var (
 // Config contains configuration options for a blockchain
 type Config struct {
 	TransactionsPerBlock int
-	Difficulty           int
+	// Difficulty is the leading zeroes needed for a block to be valid
+	Difficulty int
 	// Gekyume is the reciever of the first transaction in the genesis block
 	Gekyume                  ed25519.PublicKey
 	InitialTransactionAmount float64
@@ -39,7 +39,7 @@ type Blockchain struct {
 
 // Block is a node of a blockchain
 type Block struct {
-	Prev         *Block
+	prev         *Block
 	PrevHash     []byte
 	Timestamp    time.Time
 	Transactions []Transaction
@@ -82,7 +82,7 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 	}
 
 	gekyumeBlock := &Block{
-		Prev:         nil,
+		prev:         nil,
 		PrevHash:     nil,
 		Transactions: []Transaction{t},
 	}
@@ -106,9 +106,22 @@ func (b *Blockchain) Mine() {
 			log.Println(err)
 		}
 
-		fmt.Println(hex.EncodeToString(hash[:]))
+		hx := hex.EncodeToString(hash[:])
+		zeroes := 0
+		for _, cx := range hx {
+			if cx != '0' {
+				break
+			}
+
+			zeroes++
+		}
+
+		if zeroes >= b.Config.Difficulty {
+			log.Printf("Nonce found! %v, hash is: %v", b.CurrentBlock.Nonce, hx)
+			return
+		}
+
 		b.CurrentBlock.Nonce = rand.Int()
-		fmt.Println(b.CurrentBlock.Nonce)
 	}
 }
 

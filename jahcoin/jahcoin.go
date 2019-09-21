@@ -66,6 +66,9 @@ func (b *Block) Hash() ([sha256.Size]byte, error) {
 
 // NewBlockchain returns a pointer to a blockchain and any errors
 func NewBlockchain(c *Config) (*Blockchain, error) {
+	// TODO: store the entire blockchain on disk using a file or db
+	// and parse / read it here.
+	// Also have to handle pointing blocks to the previous ones
 	temp := math.Log2(float64(c.TransactionsPerBlock))
 
 	if temp != float64(int64(temp)) {
@@ -127,11 +130,22 @@ func (b *Blockchain) Mine() {
 }
 
 func (b *Blockchain) AddTransaction(t *Transaction) error {
+	// TODO: check if the sender has enough cash to send
+	// BTC has an indexed db stored with the
+	// balances of all public keys, they are collected
+	// by traversing the entire blockchain
+
 	b.m.Lock()
 	defer b.m.Unlock()
 
-	if len(b.CurrentBlock.Transactions) < b.Config.TransactionsPerBlock {
+	lx := len(b.CurrentBlock.Transactions)
+	if lx < b.Config.TransactionsPerBlock {
 		b.CurrentBlock.Transactions = append(b.CurrentBlock.Transactions, *t)
+
+		// If we haven't reached the limit yet, wait for more transactions
+		if lx+1 < b.Config.TransactionsPerBlock {
+			return nil
+		}
 	}
 
 	return nil

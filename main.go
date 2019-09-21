@@ -24,7 +24,11 @@ func main() {
 		panic(err)
 	}
 
+	jahPub, _, err := ed25519.GenerateKey(rand.Reader)
+
 	bc.AddTransaction(&jahcoin.Transaction{
-		Amount: 999,
+		Amount:    50,
+		Sender:    gekPub,
+		Recipient: jahPub,
 	})
 }

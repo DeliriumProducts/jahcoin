@@ -161,5 +161,53 @@ func (b *Blockchain) AddTransaction(t *Transaction) error {
 		}
 	}
 
+	// Calculate JahRoot (MerkleTree)
+
 	return nil
+}
+
+// hashTransactions returns the Merkle root / hash
+// of all transactions in the current block by
+// recursively hashing all elements.
+// Example:
+// h() being an arbitrary hashing function,`TransactionsPerBlock` set to 8
+//	   [A, B, C, D, E, F, G, H] ->
+
+//	   [h(A), h(B), h(C), h(D), h(E), h(F), h(G), h(H)] ->
+
+//	   [h(
+//		 h(A) + h(B)
+//		),
+//		h(
+//		 h(C) + h(D)
+//		),
+//		h(
+//		 h(E) + h(F)
+//	   ),
+//		h(
+//		 h(G) + h(H)
+//	   )] ->
+
+//	   [h(
+//			h(h(A) + h(B)) +
+//			h(h(C) + h(D))
+//      ),
+//		h(
+//			h(h(E) + h(F)) +
+//			h(h(G) + h(H))
+//	   )] ->
+//
+//	   [h(
+//			h(
+//				h(h(A) + h(B)) +
+//				h(h(C) + h(D))
+// 			) +
+//			h(
+//				h(h(E) + h(F)) +
+//				h(h(G) + h(H))
+//			)
+//	   )] ->
+//     e68fe78e064700fe6b98e47dc0758a4f966bd027299b685642c607ea376b7d47
+func (b *Blockchain) hashTransactions() []byte {
+	return []byte{}
 }

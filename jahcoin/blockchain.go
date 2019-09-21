@@ -2,6 +2,7 @@ package jahcoin
 
 import (
 	"crypto/ed25519"
+	"crypto/sha256"
 	"encoding/hex"
 	"log"
 	"math"
@@ -169,5 +170,21 @@ func (b *Blockchain) AddTransaction(t *Transaction) error {
 //	   )] ->
 //     e68fe78e064700fe6b98e47dc0758a4f966bd027299b685642c607ea376b7d47
 func (b *Blockchain) hashTransactions() []byte {
+	// TODO: somehow make concurrent (?)
+	// I don't know if that's possible
+	for _, tx := range b.CurrentBlock.Transactions {
+		tx.Hash()
+	}
+
 	return []byte{}
+}
+
+func hashVariadic(b ...[]byte) []byte {
+	h := sha256.New()
+
+	for _, bt := range b {
+		h.Write(bt)
+	}
+
+	return h.Sum([]byte{})
 }

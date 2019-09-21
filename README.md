@@ -13,3 +13,4 @@
 - [ ] Implement Signing and Verification of transactions
 - [ ] Implement *Blockchain.IsValid()
 - [ ] All // TODO: in code
+- [ ] Store the blockchain on a file / db (on disk)

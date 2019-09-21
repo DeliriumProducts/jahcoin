@@ -172,6 +172,10 @@ func (b *Blockchain) AddTransaction(t *Transaction) error {
 func (b *Blockchain) hashTransactions() []byte {
 	// TODO: somehow make concurrent (?)
 	// I don't know if that's possible
+
+	// TODO: are we vulnerable to the
+	// Second Preimage attack?
+	// https://www.wikiwand.com/en/Merkle_tree
 	for _, tx := range b.CurrentBlock.Transactions {
 		tx.Hash()
 	}

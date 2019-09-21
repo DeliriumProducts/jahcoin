@@ -14,17 +14,35 @@ func main() {
 	}
 
 	bc, err := jahcoin.NewBlockchain(&jahcoin.Config{
-		TransactionsPerBlock:     16,
+		TransactionsPerBlock:     4,
 		Difficulty:               5,
 		Gekyume:                  gekPub,
 		InitialTransactionAmount: 50,
 	})
 
-	if err != nil {
-		panic(err)
-	}
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
 
 	jahPub, _, err := ed25519.GenerateKey(rand.Reader)
+
+	bc.AddTransaction(&jahcoin.Transaction{
+		Amount:    50,
+		Sender:    gekPub,
+		Recipient: jahPub,
+	})
+
+	bc.AddTransaction(&jahcoin.Transaction{
+		Amount:    50,
+		Sender:    gekPub,
+		Recipient: jahPub,
+	})
+
+	bc.AddTransaction(&jahcoin.Transaction{
+		Amount:    50,
+		Sender:    gekPub,
+		Recipient: jahPub,
+	})
 
 	bc.AddTransaction(&jahcoin.Transaction{
 		Amount:    50,

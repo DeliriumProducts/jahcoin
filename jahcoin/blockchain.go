@@ -8,6 +8,7 @@ import (
 	"math"
 	"math/rand"
 	"sync"
+	"time"
 )
 
 // Config contains configuration options for a blockchain
@@ -54,6 +55,7 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 		prev:         nil,
 		PrevHash:     nil,
 		Transactions: []Transaction{t},
+		Timestamp:    time.Now(),
 	}
 
 	b := &Blockchain{
@@ -95,15 +97,17 @@ func (b *Blockchain) Mine() {
 		b.CurrentBlock.Nonce = rand.Int()
 	}
 
+	// Make the CurrentBlock to the new one
 	minedBlock := *b.CurrentBlock
-
 	b.CurrentBlock = &Block{
-		prev:     &minedBlock,
-		PrevHash: minedBlock.Hashed,
+		prev:         &minedBlock,
+		PrevHash:     minedBlock.Hashed,
+		Timestamp:    time.Now(),
+		Transactions: []Transaction{},
 	}
 }
 
-func (b *Blockchain) AddTransaction(t *Transaction) error {
+func (b *Blockchain) AddTransaction(t *Transaction) {
 	// TODO: check if the sender has enough cash to send
 	// BTC has an indexed db stored with the
 	// balances of all public keys, they are collected
@@ -118,13 +122,14 @@ func (b *Blockchain) AddTransaction(t *Transaction) error {
 
 		// If we haven't reached the limit yet, wait for more transactions
 		if lx+1 < b.Config.TransactionsPerBlock {
-			return nil
+			return
 		}
 	}
 
 	// Calculate JahRoot (MerkleTree)
+	b.CurrentBlock.JahRoot = b.hashTransactions()
 
-	return nil
+	log.Printf("%+v", b.CurrentBlock)
 }
 
 // hashTransactions returns the Merkle root / hash
@@ -176,13 +181,59 @@ func (b *Blockchain) hashTransactions() []byte {
 	// TODO: are we vulnerable to the
 	// Second Preimage attack?
 	// https://www.wikiwand.com/en/Merkle_tree
-	for _, tx := range b.CurrentBlock.Transactions {
-		tx.Hash()
+
+	var helper func(levels [][]byte) []byte
+
+	// Helper takes in the current level of the merkle tree
+	// and pairs up all elements inside
+	helper = func(levels [][]byte) []byte {
+		lx := len(levels)
+		// The bottom of our recursion:
+		// (we have only 2 elements left, and we have to calculate the final root hash)
+		// [A, B]
+		if lx == 2 {
+			return hashVariadic(levels[0], levels[1])
+		}
+
+		// the next level is always going to be twice as small
+		// [A, B, C, D] ->
+		// [AB, CD] ->
+		// [ABCD]
+
+		newLevels := make([][]byte, lx/2)
+
+		// keep track of the index in newLevels (has to be seperate value, as it's twice as small
+		// maybe there's a  better way to compute the idx without needing another variable?
+		idx := 0
+
+		// start pairing each element with its neighbor
+		// [A, B, C, D] ->
+		// A and B, C and D
+		for i := 0; i < len(levels); i += 2 {
+			newLevels[idx] = hashVariadic(levels[i], levels[i+1])
+			idx++
+		}
+
+		return helper(newLevels)
 	}
 
-	return []byte{}
+	// get the initial array of hashes (the transactions)
+	levels := [][]byte{}
+
+	for _, tx := range b.CurrentBlock.Transactions {
+		h, err := tx.Hash()
+		if err != nil {
+			log.Println(err)
+		}
+
+		levels = append(levels, h[:])
+	}
+
+	return helper(levels)
 }
 
+// hashVariadic takes in n amount of
+// elements and returns their sha256 summed hash
 func hashVariadic(b ...[]byte) []byte {
 	h := sha256.New()
 

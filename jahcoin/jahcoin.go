@@ -31,6 +31,7 @@ type Config struct {
 
 // Blockchain contains all of the blocks and the configuration options
 type Blockchain struct {
+	// GekyumeBlock (also known as the GenesisBlock) is the first block in the entire blockchain
 	GekyumeBlock *Block
 	m            *sync.Mutex
 	CurrentBlock *Block
@@ -39,12 +40,15 @@ type Blockchain struct {
 
 // Block is a node of a blockchain
 type Block struct {
-	prev         *Block
-	PrevHash     []byte
+	prev     *Block
+	PrevHash []byte
+	// Hashed is the hashed value of the entire block (excluding the prev pointer)
+	Hashed       []byte
 	Timestamp    time.Time
 	Transactions []Transaction
 	Nonce        int
-	JahRoot      []byte
+	// JahRoot is the Merkle / Hash value of all transactions in the current block
+	JahRoot []byte
 }
 
 // Transaction is a transaction between 2 parties
@@ -69,6 +73,7 @@ func NewBlockchain(c *Config) (*Blockchain, error) {
 	// TODO: store the entire blockchain on disk using a file or db
 	// and parse / read it here.
 	// Also have to handle pointing blocks to the previous ones
+
 	temp := math.Log2(float64(c.TransactionsPerBlock))
 
 	if temp != float64(int64(temp)) {
@@ -121,11 +126,19 @@ func (b *Blockchain) Mine() {
 		}
 
 		if zeroes >= b.Config.Difficulty {
+			b.CurrentBlock.Hashed = hash
 			log.Printf("Nonce found! %v, hash is: %v", b.CurrentBlock.Nonce, hx)
-			return
+			break
 		}
 
 		b.CurrentBlock.Nonce = rand.Int()
+	}
+
+	minedBlock := *b.CurrentBlock
+
+	b.CurrentBlock = &Block{
+		prev:     &minedBlock,
+		PrevHash: minedBlock.Hashed,
 	}
 }
 

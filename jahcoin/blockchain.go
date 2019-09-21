@@ -97,7 +97,7 @@ func (b *Blockchain) Mine() {
 		b.CurrentBlock.Nonce = rand.Int()
 	}
 
-	// Make the CurrentBlock to the new one
+	// Make the CurrentBlock point to the new one
 	minedBlock := *b.CurrentBlock
 	b.CurrentBlock = &Block{
 		prev:         &minedBlock,

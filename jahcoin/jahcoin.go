@@ -126,7 +126,7 @@ func (b *Blockchain) Mine() {
 		}
 
 		if zeroes >= b.Config.Difficulty {
-			b.CurrentBlock.Hashed = hash
+			b.CurrentBlock.Hashed = hash[:]
 			log.Printf("Nonce found! %v, hash is: %v", b.CurrentBlock.Nonce, hx)
 			break
 		}
